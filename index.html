@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GPT 4 API</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>...world takeover in process...</h1>
+            <form action="/action_page.php">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Paste resume here" name="message" id="message"
+                        style="height: 300px"></textarea>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-default" id="submit">Generate</button>
+                </div>
+            </form>
+
+    </div>
+    <div class="container" id="chat-log"></div>
+
+    <script>
+        const chatLog = document.getElementById('chat-log')
+        const message = document.getElementById('message')
+        const form = document.querySelector('form')
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+            const messageText = message.value
+            chatLog.scrollTop = chatLog.scrollHeight
+
+            fetch('http://localhost:3000/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `List all the technologies and tools used based on this resume:
+                    ${messageText}`
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const messageElement = document.createElement('div')
+                    messageElement.classList.add('message')
+                    messageElement.classList.add('message--received')
+                    messageElement.innerHTML = `
+                    <div>Tech List:</div>
+                    <div class="message__text">${data.completion.content}</div>
+                `
+                    chatLog.appendChild(messageElement)
+                    chatLog.scrollTop = chatLog.scrollHeight
+                })
+
+            fetch('http://localhost:3000/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Generate a linkedin description based on this experience:
+                    ${messageText}`
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const messageElement2 = document.createElement('div')
+                    messageElement2.classList.add('message')
+                    messageElement2.classList.add('message--received')
+                    messageElement2.innerHTML = `
+                    <div>Description</div>
+                    <div class="message__text">${data.completion.content}</div>
+                `
+                    chatLog.appendChild(messageElement2)
+                    chatLog.scrollTop = chatLog.scrollHeight
+                })
+        })
+    </script>
+</body>
+
+</html>
